@@ -19,11 +19,16 @@ export default function OverviewHero() {
           </p>
         </div>
 
-        <img
-          src={overviewArtwork}
-          alt=""
-          className="hidden h-[280px] w-[264px] shrink-0 object-contain lg:block"
-        />
+        {/* Kotak seukuran area ilustrasi di Figma (264 × 280).
+            Gambar export lebih besar (451 × 496) karena ada efek cahaya,
+            jadi gambar dipasang absolut dengan ukuran aslinya. */}
+        <div className="relative hidden h-[280px] w-[264px] shrink-0 lg:block">
+          <img
+            src={overviewArtwork}
+            alt=""
+            className="pointer-events-none absolute -top-[8px] -left-[185px] w-[451px] max-w-none"
+          />
+        </div>
       </Container>
     </section>
   );
