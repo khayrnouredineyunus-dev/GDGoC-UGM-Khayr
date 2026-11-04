@@ -1,23 +1,35 @@
 import { useState } from "react";
-import { useApi } from "../../hooks/useApi";
-import type { Faq } from "../../api/types";
 import Container from "../ui/Container";
 import SectionLabel from "../ui/SectionLabel";
 import TextLink from "../ui/TextLink";
 import FaqItem from "./FaqItem";
-import ErrorState from "../states/ErrorState";
-import EmptyState from "../states/EmptyState";
+
+// Konten statis dari desain Figma halaman Landing.
+const faqs = [
+  {
+    question: "Do I need to know how to code?",
+    answer:
+      "No. Start with an interest in technology and a willingness to learn. Research and design are part of the journey, too.",
+  },
+  {
+    question: "Is this only for computer science students?",
+    answer:
+      "Different disciplines bring different perspectives. Explore the overview to find a starting point that fits your interests.",
+  },
+  {
+    question: "How can I find learning opportunities?",
+    answer:
+      "Keep an eye on @gdgoc.ugm for community updates. You can also use the contact page to ask about getting involved.",
+  },
+];
 
 export default function FaqSection() {
-  const { data: faqs, loading, error, retry } = useApi<Faq[]>("/faqs");
-  // Id pertanyaan yang sedang terbuka:
-  // - undefined: pengguna belum memilih, jadi pertanyaan pertama terbuka
-  // - null: pengguna menutup semua pertanyaan
-  const [openId, setOpenId] = useState<string | null | undefined>(undefined);
-  const activeId = openId === undefined ? (faqs?.[0]?.id ?? null) : openId;
+  // Index pertanyaan yang sedang terbuka. null berarti semua tertutup.
+  // Pertanyaan pertama terbuka secara bawaan.
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const toggle = (id: string) => {
-    setOpenId(activeId === id ? null : id);
+  const toggle = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
@@ -34,23 +46,13 @@ export default function FaqSection() {
         </div>
 
         <div className="flex flex-1 flex-col gap-6">
-          {loading &&
-            Array.from({ length: 3 }, (_, i) => (
-              <div
-                key={i}
-                className="bg-surface h-16 animate-pulse rounded-xl"
-              />
-            ))}
-          {error && <ErrorState message={error} onRetry={retry} />}
-          {faqs && faqs.length === 0 && (
-            <EmptyState message="No questions yet. Ask us anything!" />
-          )}
-          {faqs?.map((faq) => (
+          {faqs.map((faq, index) => (
             <FaqItem
-              key={faq.id}
-              faq={faq}
-              isOpen={activeId === faq.id}
-              onToggle={() => toggle(faq.id)}
+              key={faq.question}
+              question={faq.question}
+              answer={faq.answer}
+              isOpen={openIndex === index}
+              onToggle={() => toggle(index)}
             />
           ))}
         </div>
