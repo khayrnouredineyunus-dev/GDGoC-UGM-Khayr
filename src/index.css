@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Google Sans Flex", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #242424;
+  --color-muted: #5f6368;
+  --color-line: #dadce0;
+  --color-surface: #f1f3f4;
+
+  --color-primary: #1967d2;
+  --color-primary-soft: #eaf2ff;
+  --color-g-blue: #4284f4;
+  --color-g-blue-light: #8ab4f8;
+  --color-g-red: #ea4335;
+  --color-g-yellow: #f9ab00;
+  --color-g-yellow-light: #fde293;
+  --color-g-green: #34a853;
+}
+
+@layer base {
+  body {
+    @apply text-ink bg-white font-sans antialiased;
+  }
+}
