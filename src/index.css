@@ -16,6 +16,9 @@
   --color-g-yellow: #f9ab00;
   --color-g-yellow-light: #fde293;
   --color-g-green: #34a853;
+  --color-g-green-soft: #eaf5ed;
+  --color-g-yellow-soft: #fff7df;
+  --color-g-red-soft: #fdedea;
 }
 
 @layer base {
