@@ -13,13 +13,23 @@ const artworks: Record<string, string> = {
 
 interface TrackCardProps {
   track: Track;
+  // true kalau track ini dipilih lewat URL (?track=...) di halaman Overview
+  highlighted?: boolean;
 }
 
-export default function TrackCard({ track }: TrackCardProps) {
+export default function TrackCard({
+  track,
+  highlighted = false,
+}: TrackCardProps) {
   const artwork = artworks[track.id];
 
   return (
-    <article className="border-line relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white">
+    <article
+      aria-current={highlighted ? "true" : undefined}
+      className={`relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white transition-shadow ${
+        highlighted ? "border-primary ring-primary/15 ring-4" : "border-line"
+      }`}
+    >
       {artwork ? (
         <>
           {/* Gambar sedikit lebih tinggi dari areanya karena ada efek cahaya
