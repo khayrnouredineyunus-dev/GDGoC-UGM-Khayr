@@ -9,7 +9,10 @@ import EmptyState from "../states/EmptyState";
 export default function FormatGrid() {
   const { data, loading, error, retry } = useApi<LearningFormat[]>("/formats");
 
-  if (loading) return <LoadingState count={4} className="h-48" />;
+  if (loading)
+    return (
+      <LoadingState count={4} className="h-48" gridClassName="md:grid-cols-2" />
+    );
   if (error) return <ErrorState message={error} onRetry={retry} />;
   if (!data || data.length === 0)
     return <EmptyState message="No learning formats available yet." />;

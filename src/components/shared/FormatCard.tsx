@@ -13,6 +13,15 @@ const formatStyles: Record<string, { icon: string; background: string }> = {
   "knowledge-sharing": { icon: sharingIcon, background: "bg-g-red-soft" },
 };
 
+// Teks "Best for" dari desain Figma. Tidak tersedia di API, jadi disimpan statis
+// dan dicocokkan lewat id. Kalau ada format baru, dipakai label dari field cta.
+const bestFor: Record<string, string> = {
+  "study-groups": "Learning the fundamentals",
+  "hands-on-workshops": "Trying something new",
+  "project-circles": "Putting skills into practice",
+  "knowledge-sharing": "Exchanging perspectives",
+};
+
 interface FormatCardProps {
   format: LearningFormat;
 }
@@ -38,7 +47,9 @@ export default function FormatCard({ format }: FormatCardProps) {
         <h3 className="text-[27px] leading-[1.12] font-bold">{format.name}</h3>
         <p className="text-muted leading-[1.55]">{format.description}</p>
         <p className="text-primary text-[13px] font-medium">
-          {slugToLabel(format.cta)}
+          {bestFor[format.id]
+            ? `Best for • ${bestFor[format.id]}`
+            : slugToLabel(format.cta)}
         </p>
       </div>
     </article>
