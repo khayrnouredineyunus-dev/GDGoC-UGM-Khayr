@@ -12,6 +12,7 @@ import InvitationPanel from "../components/shared/InvitationPanel";
 export default function Home() {
   return (
     <>
+      <title>GDGoC UGM | Big ideas. Built together.</title>
       <HeroSection />
       <PromiseStrip />
       <IntroSection />
