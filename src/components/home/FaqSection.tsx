@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { usePersistentState } from "../../hooks/usePersistentState";
 import Container from "../ui/Container";
 import SectionLabel from "../ui/SectionLabel";
 import TextLink from "../ui/TextLink";
@@ -24,9 +24,12 @@ const faqs = [
 ];
 
 export default function FaqSection() {
-  // Index pertanyaan yang sedang terbuka. null berarti semua tertutup.
-  // Pertanyaan pertama terbuka secara bawaan.
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  // Pertanyaan pertama terbuka secara bawaan, lalu pilihan pengguna
+  // disimpan supaya tetap sama setelah halaman di-refresh.
+  const [openIndex, setOpenIndex] = usePersistentState<number | null>(
+    "gdgoc:faq-open-index",
+    0,
+  );
 
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
