@@ -15,54 +15,32 @@ const formatStyles: Record<string, { icon: string; background: string }> = {
 
 interface FormatCardProps {
   format: LearningFormat;
-  // "stacked": ikon di atas (halaman Landing)
-  // "row": ikon di kiri dalam kotak berwarna (halaman Overview)
-  variant?: "stacked" | "row";
 }
 
-export default function FormatCard({
-  format,
-  variant = "stacked",
-}: FormatCardProps) {
+// Kartu format belajar untuk halaman Overview: ikon di kiri dalam kotak berwarna.
+export default function FormatCard({ format }: FormatCardProps) {
   const style = formatStyles[format.id];
-  const icon = style ? (
-    <img src={style.icon} alt="" className="size-6" />
-  ) : (
-    <span aria-hidden="true" className="text-xl">
-      {format.icon}
-    </span>
-  );
-
-  if (variant === "row") {
-    return (
-      <article className="flex h-full gap-6 rounded-3xl bg-white p-7">
-        <div
-          className={`flex size-13 shrink-0 items-center justify-center rounded-[14px] ${style?.background ?? "bg-surface"}`}
-        >
-          {icon}
-        </div>
-        <div className="flex flex-col gap-3.5">
-          <h3 className="text-[27px] leading-[1.12] font-bold">
-            {format.name}
-          </h3>
-          <p className="text-muted leading-[1.55]">{format.description}</p>
-          <p className="text-primary text-[13px] font-medium">
-            {slugToLabel(format.cta)}
-          </p>
-        </div>
-      </article>
-    );
-  }
 
   return (
-    <article className="flex h-full flex-col gap-5 rounded-3xl bg-white p-8">
-      {icon}
-      <h3 className="text-[28px] leading-[1.12] font-bold">{format.name}</h3>
-      <p className="text-muted leading-[1.55]">{format.description}</p>
-      <div className="bg-line mt-auto h-px" />
-      <p className="text-primary text-[13px] font-medium">
-        {slugToLabel(format.cta)}
-      </p>
+    <article className="flex h-full gap-6 rounded-3xl bg-white p-7">
+      <div
+        className={`flex size-13 shrink-0 items-center justify-center rounded-[14px] ${style?.background ?? "bg-surface"}`}
+      >
+        {style ? (
+          <img src={style.icon} alt="" className="size-6" />
+        ) : (
+          <span aria-hidden="true" className="text-xl">
+            {format.icon}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-col gap-3.5">
+        <h3 className="text-[27px] leading-[1.12] font-bold">{format.name}</h3>
+        <p className="text-muted leading-[1.55]">{format.description}</p>
+        <p className="text-primary text-[13px] font-medium">
+          {slugToLabel(format.cta)}
+        </p>
+      </div>
     </article>
   );
 }
