@@ -7,7 +7,9 @@ const communityDots = ["bg-g-red", "bg-g-yellow", "bg-g-green", "bg-g-blue"];
 
 export default function HeroSection() {
   return (
-    <section>
+    // Perubahan 1: overflow-x-clip supaya cahaya ilustrasi yang meluber ke kiri
+    // tidak membuat halaman bisa digeser ke samping di HP
+    <section className="overflow-x-clip">
       <Container className="grid items-center gap-12 py-12 lg:grid-cols-2 lg:gap-10 lg:py-18">
         <div className="flex flex-col items-start gap-7">
           <SectionLabel>GDGoC UGM • 2026/2027</SectionLabel>
@@ -44,11 +46,16 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <img
-          src={heroArtwork}
-          alt="Glass illustration of a research magnifier and a code window coming together, with a sticker that reads hello, possibilities"
-          className="mx-auto w-full max-w-[620px] lg:max-w-none"
-        />
+        {/* Perubahan 2: kotak seukuran kartu ilustrasi (620 × 530 di Figma).
+            Gambar hasil export lebih besar karena ada efek cahaya di kiri dan bawah,
+            jadi gambar ditempatkan absolut agar kartunya pas mengisi kotak ini. */}
+        <div className="relative mx-auto aspect-[620/530] w-full max-w-[620px]">
+          <img
+            src={heroArtwork}
+            alt="Glass illustration of a research magnifier and a code window coming together, with a sticker that reads hello, possibilities"
+            className="absolute top-0 right-0 w-[117.75%] max-w-none"
+          />
+        </div>
       </Container>
     </section>
   );
