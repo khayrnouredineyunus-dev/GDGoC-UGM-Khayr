@@ -1,57 +1,27 @@
+import { useApi } from "../../hooks/useApi";
 import type { Track } from "../../api/types";
-import TextLink from "../ui/TextLink";
-import researchArt from "../../assets/track-research.png";
-import designArt from "../../assets/track-design.png";
-import developmentArt from "../../assets/track-development.png";
+import TrackCard from "./TrackCard";
+import LoadingState from "../states/LoadingState";
+import ErrorState from "../states/ErrorState";
+import EmptyState from "../states/EmptyState";
 
-// Ilustrasi untuk setiap track, dicocokkan lewat id dari API.
-const artworks: Record<string, string> = {
-  "research-discovery": researchArt,
-  "design-creativity": designArt,
-  development: developmentArt,
-};
+// Mengambil daftar track dari API lalu menampilkannya sebagai kartu.
+// Dipakai di halaman Landing dan Overview.
+export default function TrackGrid() {
+  const { data: tracks, loading, error, retry } = useApi<Track[]>("/tracks");
 
-interface TrackCardProps {
-  track: Track;
-}
-
-export default function TrackCard({ track }: TrackCardProps) {
-  const artwork = artworks[track.id];
+  if (loading) return <LoadingState count={3} className="h-[500px]" />;
+  if (error) return <ErrorState message={error} onRetry={retry} />;
+  if (!tracks || tracks.length === 0)
+    return <EmptyState message="No learning tracks are open right now." />;
 
   return (
-    <article className="border-line relative flex h-full flex-col overflow-hidden rounded-3xl border bg-white">
-      {artwork ? (
-        <>
-          {/* Gambar sedikit lebih tinggi dari areanya karena ada efek cahaya
-              yang menyebar ke bawah, jadi dipasang absolut di atas kartu. */}
-          <img
-            src={artwork}
-            alt=""
-            className="pointer-events-none absolute inset-x-0 top-0 w-full"
-          />
-          <div className="aspect-[400/232]" />
-        </>
-      ) : (
-        // Cadangan kalau API menambah track baru yang belum punya ilustrasi
-        <div className="bg-surface flex aspect-[400/232] items-center justify-center text-6xl">
-          {track.icon}
-        </div>
-      )}
-
-      <div className="relative flex flex-1 flex-col gap-4.5 p-7">
-        <p className="text-primary text-[11px] font-medium uppercase">
-          {track.tagline}
-        </p>
-        <h3 className="text-[28px] leading-[1.12] font-bold">{track.name}</h3>
-        <p className="text-muted leading-[1.55]">{track.description}</p>
-        <div className="bg-line h-px" />
-        <p className="text-muted text-[13px] leading-normal">
-          {track.skills.join(" · ")}
-        </p>
-        <TextLink to={track.explore_link} className="mt-auto">
-          Explore this track
-        </TextLink>
-      </div>
-    </article>
+    <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {tracks.map((track) => (
+        <li key={track.id}>
+          <TrackCard track={track} />
+        </li>
+      ))}
+    </ul>
   );
 }

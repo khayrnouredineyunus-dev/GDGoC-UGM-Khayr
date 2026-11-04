@@ -8,8 +8,8 @@ export default function Home() {
     <>
       <HeroSection />
       <PromiseStrip />
-      <IntroSection />
-      <TrackSection />
+      {<IntroSection />}
+      {<TrackSection />}
     </>
   );
 }

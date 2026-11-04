@@ -27,6 +27,7 @@ export default function TrackCard({ track }: TrackCardProps) {
           <img
             src={artwork}
             alt=""
+            loading="lazy"
             className="pointer-events-none absolute inset-x-0 top-0 w-full"
           />
           <div className="aspect-[400/232]" />
