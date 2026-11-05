@@ -12,8 +12,10 @@ export default function PurposeSection() {
             <br />
             <span className="text-primary">“I wonder”</span> to
             <br />
-            {/* Teks bergradasi: warna diisi gradient lalu dipotong sesuai bentuk huruf */}
-            <span className="from-primary inline-block bg-linear-to-b from-[58.654%] to-[#6facff] bg-clip-text text-transparent">
+            {/* Teks bergradasi: warna diisi gradient lalu dipotong sesuai bentuk huruf.
+                Di Figma, gradient (58.654% → 100%) dibentang di seluruh judul 3 baris,
+                jadi warna atas baris ketiga dihitung ulang menjadi #2a74db. */}
+            <span className="inline-block bg-linear-to-b from-[#2a74db] to-[#6facff] bg-clip-text text-transparent">
               “I made this.”
             </span>
           </h2>
