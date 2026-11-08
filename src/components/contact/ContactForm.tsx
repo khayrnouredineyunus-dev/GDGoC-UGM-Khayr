@@ -1,10 +1,14 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { InquiryCategory } from "../../api/types";
+import { usePersistentState } from "../../hooks/usePersistentState";
 import FormField from "./FormField";
 import {
-  emptyValues,
+  DRAFT_KEY,
+  emptyDraft,
   fieldClass,
+  hasDraftContent,
   validateContact,
+  type ContactDraft,
   type ContactErrors,
   type ContactValues,
 } from "./contactValidation";
@@ -36,28 +40,56 @@ export default function ContactForm({
   category,
   onCategoryChange,
 }: ContactFormProps) {
-  const [values, setValues] = useState<ContactValues>(emptyValues);
+  // Isian form disimpan otomatis ke localStorage, jadi tidak hilang
+  // kalau halaman di-refresh atau pengguna pindah halaman sebentar.
+  const [draft, setDraft] = usePersistentState<ContactDraft>(
+    DRAFT_KEY,
+    emptyDraft,
+  );
+  const [consent, setConsent] = useState(false);
+  // Tampilkan info "draft dipulihkan" hanya kalau saat halaman dibuka sudah ada isian lama
+  const [showRestored, setShowRestored] = useState(() =>
+    hasDraftContent(draft),
+  );
   const [errors, setErrors] = useState<ContactErrors>({});
-  const [submitted, setSubmitted] = useState(false);
   // Setelah tombol kirim ditekan sekali, error diperbarui setiap kali pengguna mengetik
   const [attempted, setAttempted] = useState(false);
+  // Nama dan subjek disalin saat terkirim, karena draft langsung dikosongkan
+  const [sent, setSent] = useState<{
+    firstName: string;
+    subject: string;
+  } | null>(null);
 
-  function updateValue(name: keyof ContactValues, value: string | boolean) {
-    const next = { ...values, [name]: value };
-    setValues(next);
-    if (attempted) setErrors(validateContact(next, category));
+  const values: ContactValues = { ...draft, consent };
+
+  function revalidate(next: ContactValues, nextCategory = category) {
+    if (attempted) setErrors(validateContact(next, nextCategory));
   }
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
-    const { name, value } = event.target;
-    updateValue(name as keyof ContactValues, value);
+    const name = event.target.name as keyof ContactDraft;
+    const nextDraft = { ...draft, [name]: event.target.value };
+    setDraft(nextDraft);
+    revalidate({ ...nextDraft, consent });
+  }
+
+  function handleConsentChange(event: ChangeEvent<HTMLInputElement>) {
+    setConsent(event.target.checked);
+    revalidate({ ...draft, consent: event.target.checked });
   }
 
   function handleCategoryChange(event: ChangeEvent<HTMLSelectElement>) {
     onCategoryChange(event.target.value);
-    if (attempted) setErrors(validateContact(values, event.target.value));
+    revalidate(values, event.target.value);
+  }
+
+  function clearDraft() {
+    setDraft(emptyDraft);
+    setErrors({});
+    setAttempted(false);
+    setShowRestored(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -75,32 +107,32 @@ export default function ContactForm({
       field?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    setSubmitted(true);
+
+    setSent({
+      firstName: draft.firstName.trim(),
+      subject: draft.subject.trim(),
+    });
+    // Pesan dianggap terkirim, jadi draft tidak perlu disimpan lagi
+    clearDraft();
+    setConsent(false);
   }
 
-  function handleReset() {
-    setValues(emptyValues);
-    setErrors({});
-    setAttempted(false);
-    setSubmitted(false);
-  }
-
-  if (submitted) {
+  if (sent) {
     return (
       <div
         role="status"
         className="bg-surface flex flex-col items-start gap-4 rounded-3xl p-6 md:p-9"
       >
         <h2 className="text-2xl leading-[1.12] font-bold md:text-[30px]">
-          Thanks, {values.firstName.trim()}!
+          Thanks, {sent.firstName}!
         </h2>
         <p className="text-muted leading-[1.55]">
-          Your message about “{values.subject.trim()}” passed all checks. This
-          site is a demo, so the message isn’t sent anywhere yet.
+          Your message about “{sent.subject}” passed all checks. This site is a
+          demo, so the message isn’t sent anywhere yet.
         </p>
         <button
           type="button"
-          onClick={handleReset}
+          onClick={() => setSent(null)}
           className="border-line text-primary hover:bg-primary-soft rounded-lg border bg-white px-5 py-3 font-medium transition-colors"
         >
           Send another message
@@ -123,7 +155,22 @@ export default function ContactForm({
           ↗
         </span>
       </div>
-      <p className="text-muted text-[13px]">Fields marked * are required.</p>
+      <div className="flex flex-col gap-2">
+        <p className="text-muted text-[13px]">Fields marked * are required.</p>
+        {showRestored && (
+          <p className="text-muted text-[13px]">
+            <span className="text-g-green">✓</span> Draft restored from your
+            last visit ·{" "}
+            <button
+              type="button"
+              onClick={clearDraft}
+              className="text-primary font-medium hover:underline"
+            >
+              Clear draft
+            </button>
+          </p>
+        )}
+      </div>
 
       <div className="flex flex-col gap-6 sm:flex-row sm:gap-5">
         <FormField
@@ -138,7 +185,7 @@ export default function ContactForm({
             type="text"
             autoComplete="given-name"
             placeholder="Your first name"
-            value={values.firstName}
+            value={draft.firstName}
             onChange={handleChange}
             className={`${fieldClass} h-13.5 ${borderClass(errors.firstName)}`}
             {...errorProps("contact-firstName", errors.firstName)}
@@ -151,7 +198,7 @@ export default function ContactForm({
             type="text"
             autoComplete="family-name"
             placeholder="Your last name"
-            value={values.lastName}
+            value={draft.lastName}
             onChange={handleChange}
             className={`${fieldClass} border-line h-13.5`}
           />
@@ -169,7 +216,7 @@ export default function ContactForm({
           type="email"
           autoComplete="email"
           placeholder="Where we can reply to you"
-          value={values.email}
+          value={draft.email}
           onChange={handleChange}
           className={`${fieldClass} h-13.5 ${borderClass(errors.email)}`}
           {...errorProps("contact-email", errors.email)}
@@ -183,7 +230,7 @@ export default function ContactForm({
           type="text"
           autoComplete="organization"
           placeholder="Where you study or work (optional)"
-          value={values.organization}
+          value={draft.organization}
           onChange={handleChange}
           className={`${fieldClass} border-line h-13.5`}
         />
@@ -227,7 +274,7 @@ export default function ContactForm({
           name="subject"
           type="text"
           placeholder="A short introduction to your question"
-          value={values.subject}
+          value={draft.subject}
           onChange={handleChange}
           className={`${fieldClass} h-13.5 ${borderClass(errors.subject)}`}
           {...errorProps("contact-subject", errors.subject)}
@@ -244,7 +291,7 @@ export default function ContactForm({
           name="message"
           rows={5}
           placeholder="Tell us a little about your question or idea…"
-          value={values.message}
+          value={draft.message}
           onChange={handleChange}
           className={`${fieldClass} h-36.5 resize-y py-4 ${borderClass(errors.message)}`}
           {...errorProps("contact-message", errors.message)}
@@ -257,8 +304,8 @@ export default function ContactForm({
             <input
               id="contact-consent"
               type="checkbox"
-              checked={values.consent}
-              onChange={(event) => updateValue("consent", event.target.checked)}
+              checked={consent}
+              onChange={handleConsentChange}
               className="accent-g-blue size-4.5"
               {...errorProps("contact-consent", errors.consent)}
             />

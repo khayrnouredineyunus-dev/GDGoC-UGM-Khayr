@@ -14,15 +14,26 @@ export type ContactErrors = Partial<
   Record<keyof ContactValues | "category", string>
 >;
 
-export const emptyValues: ContactValues = {
+// Bagian form yang disimpan sebagai draft di localStorage.
+// Checkbox persetujuan sengaja tidak ikut disimpan, supaya pengguna
+// tetap harus mencentangnya secara sadar setiap kali mengirim.
+export type ContactDraft = Omit<ContactValues, "consent">;
+
+export const DRAFT_KEY = "gdgoc:contact-draft";
+
+export const emptyDraft: ContactDraft = {
   firstName: "",
   lastName: "",
   email: "",
   organization: "",
   subject: "",
   message: "",
-  consent: false,
 };
+
+// true kalau ada minimal satu field draft yang sudah diisi.
+export function hasDraftContent(draft: ContactDraft): boolean {
+  return Object.values(draft).some((value) => value.trim() !== "");
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
