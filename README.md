@@ -5,7 +5,7 @@ A responsive website for Google Developer Groups on Campus Universitas Gadjah Ma
 Submitted for the **Hacker Front-End study case**, GDGoC UGM Open Recruitment 2026/2027.
 
 - **Live site:** https://gdgoc-ugm.vercel.app
-- **Demo video:** [Google Drive](VIDEO_LINK_HERE)
+- **Demo video:** [Youtube](https://youtu.be/jHW5pYOsx_E)
 - **Design:** [Figma UI Design Track](https://www.figma.com/design/yx06YRA90jBEX0Mmu64RBx/GDGoC-%E2%80%93-Open-Recruitment)
 - **API:** https://gdgoc-ugm-api.vercel.app/api
 
