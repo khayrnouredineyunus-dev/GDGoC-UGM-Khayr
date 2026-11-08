@@ -6,7 +6,7 @@ import Logo from "./Logo";
 import instagramIcon from "../../assets/instagram.svg";
 import youtubeIcon from "../../assets/youtube.svg";
 
-const YOUTUBE_URL = "https://www.youtube.com/@gdgocugm";;
+const YOUTUBE_URL = "https://www.youtube.com/@gdgocugm";
 
 export default function Footer() {
   const { data: nav } = useApi<NavItem[]>("/navigation");
