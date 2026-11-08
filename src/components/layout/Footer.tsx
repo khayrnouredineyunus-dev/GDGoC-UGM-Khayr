@@ -6,8 +6,7 @@ import Logo from "./Logo";
 import instagramIcon from "../../assets/instagram.svg";
 import youtubeIcon from "../../assets/youtube.svg";
 
-// TODO: ganti dengan alamat channel YouTube resmi GDGoC UGM
-const YOUTUBE_URL = "https://www.youtube.com/@gdgoc.ugm";
+const YOUTUBE_URL = "https://www.youtube.com/@gdgocugm";;
 
 export default function Footer() {
   const { data: nav } = useApi<NavItem[]>("/navigation");
