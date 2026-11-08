@@ -1,36 +1,28 @@
-import { useSearchParams } from "react-router";
-import { useApi } from "../../hooks/useApi";
 import type { InquiryCategory } from "../../api/types";
 import Container from "../ui/Container";
 import CategoryList from "./CategoryList";
+import CategoryFaqs from "./CategoryFaqs";
 import CommunityUpdates from "./CommunityUpdates";
 import ContactForm from "./ContactForm";
 
-export default function ContactWorkspace() {
-  // Satu request dipakai bersama oleh kartu kategori dan dropdown form
-  const {
-    data: categories,
-    loading,
-    error,
-    retry,
-  } = useApi<InquiryCategory[]>("/inquiry-categories");
-  const [searchParams, setSearchParams] = useSearchParams();
+interface ContactWorkspaceProps {
+  categories: InquiryCategory[] | null;
+  loading: boolean;
+  error: string | null;
+  onRetry: () => void;
+  selectedId: string;
+  onSelect: (id: string) => void;
+}
 
-  // Kategori terpilih disimpan di URL (?category=...), jadi tetap sama
-  // setelah refresh dan bisa dibagikan. Kalau kosong atau tidak dikenal,
-  // dipakai kategori pertama, seperti di desain Figma.
-  const fromUrl = searchParams.get("category");
-  const selectedId =
-    categories?.find((item) => item.id === fromUrl)?.id ??
-    categories?.[0]?.id ??
-    "";
-
-  function selectCategory(id: string) {
-    setSearchParams(
-      { category: id },
-      { replace: true, preventScrollReset: true },
-    );
-  }
+export default function ContactWorkspace({
+  categories,
+  loading,
+  error,
+  onRetry,
+  selectedId,
+  onSelect,
+}: ContactWorkspaceProps) {
+  const selected = categories?.find((item) => item.id === selectedId) ?? null;
 
   return (
     <section>
@@ -40,10 +32,11 @@ export default function ContactWorkspace() {
             categories={categories}
             loading={loading}
             error={error}
-            onRetry={retry}
+            onRetry={onRetry}
             selectedId={selectedId}
-            onSelect={selectCategory}
+            onSelect={onSelect}
           />
+          <CategoryFaqs category={selected} />
           <CommunityUpdates />
         </div>
 
@@ -52,7 +45,7 @@ export default function ContactWorkspace() {
             categories={categories}
             loading={loading}
             category={selectedId}
-            onCategoryChange={selectCategory}
+            onCategoryChange={onSelect}
           />
         </div>
       </Container>
